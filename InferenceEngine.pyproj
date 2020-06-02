@@ -27,7 +27,10 @@
     <Compile Include="FileReader.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="HFSentence.py">
+    <Compile Include="ForwardChaining.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="HornForm.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="InferenceEngine.py" />

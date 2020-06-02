@@ -4,13 +4,15 @@ from FileReader import FileReader
 from KnowledgeBase import KnowledgeBase
 from Sentence import Sentence
 from TruthTable import TruthTable
+from HornForm import HornForm
+from ForwardChaining import ForwardChaining
 
 if __name__ == "__main__":
     """
     print('Number of arguments: ' + str(len(sys.argv)) + ' arguments.', end=' ')
     print('Argument List:' + str(sys.argv))
     """
-    tell, ask = FileReader.read("test2.txt")
+    tell, ask = FileReader.read("test1.txt")
     
     if len(tell) == 0:
         print("No tell found.")
@@ -19,11 +21,13 @@ if __name__ == "__main__":
         print("No ask found.")
         sys.exit(0)
 
-    kb = KnowledgeBase(tell)
+    kb = KnowledgeBase(tell, 'HF')
 
-    tt = TruthTable(kb)
-
-    print(tt.solve(ask))
+    #tt = TruthTable(kb)
+    #print(tt.solve(ask))
+    print('ask: ', ask)
+    fc = ForwardChaining(kb)
+    print(fc.solve(ask))
 
     #sentence = Sentence("a&b&c=>d")
 

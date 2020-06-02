@@ -8,22 +8,27 @@ class Sentence:
         self.atomic = {}    # dictionary of atomic sentences within sentence
 
         # separate connectives and symbols
-        original = re.split("(=>|&|\(|\)|~)",sentence)
+        original = re.split("(=>|&|\(|\)|~|\|\||<=>)",sentence)
         # remove empty string
         while("" in original) : 
             original.remove("") 
-
+        self.original = original.copy()
+        #print('original sentence: ', original)
         #extract symbols from sentence
-        symbols = re.findall("[^(=>|&|\(|\)|~)]", sentence)
+        #symbols = re.findall("[^(=>|&|\(|\)|~)]", sentence)
+        symbols = re.split("=>|&|\(|\)|~|\|\||<=>",sentence)
+        while("" in symbols) : 
+            symbols.remove("") 
         self.symbols = list(set(symbols))  # remove duplicate symbols
-        print("print symbols test: ", self.symbols)
+        #print("print symbols test: ", self.symbols)
 
         # extract child & sentences
-        self.root = self._parse(original)
-        print('root: ', self.root)
-        print('atom: ', self.atomic)
+        self.root = self.__parse(original)
+        #print('root: ', self.root)
+        #print('atom: ', self.atomic)
 
-    def _parse(self, sentence):
+
+    def __parse(self, sentence):
         # parse atomic sentences in brackets first
         while '(' in sentence:
             #index of left bracket in sentence
@@ -47,8 +52,8 @@ class Sentence:
                 raise Exception("Incorrect braces format in sentence: ", sentence)
             # get section of sentence contained inside brackets
             section = sentence[left_index+1:right_index]
-            # recursively call _parse till no brackets left
-            section = self._parse(section)
+            # recursively call __parse till no brackets left
+            section = self.__parse(section)
             # replace section of sentence with name of atomic sentence
             if len(section) == 1:
                 sentence[left_index] = section[0]
@@ -60,7 +65,7 @@ class Sentence:
         # negation
         while '~' in sentence:
             index = sentence.index('~')
-            self._add_atom(index, sentence, '~')
+            self.__add_atom(index, sentence, '~')
         # conjunction and disjunction
         while ('&' or '||') in sentence:
             if '&' in sentence:
@@ -68,22 +73,22 @@ class Sentence:
             if '||' in sentence:
                 if sentence.index('||') < index:
                     index = sentence.index('||')
-            self._add_atom(index, sentence, '&||')
+            self.__add_atom(index, sentence, '&||')
         # implication
         while ('=>') in sentence:
             index = sentence.index('=>')
-            self._add_atom(index, sentence, '=>')
+            self.__add_atom(index, sentence, '=>')
         # biconditional
         while ('<=>') in sentence:
             index = sentence.index('<=>')
-            self._add_atom(index, sentence, '<=>')
+            self.__add_atom(index, sentence, '<=>')
 
         return sentence
 
     # adds atomic sentence to atomic dictionary where the
     # key is of the format atom[n]
     # e.g. 'atom1' : ['a', '&', 'b']
-    def _add_atom(self, index, sentence, connective):
+    def __add_atom(self, index, sentence, connective):
         # negation is different as only has 2 elements
         if connective == '~':
             atom = [sentence[index],
@@ -115,12 +120,13 @@ class Sentence:
                 bool_pairs.update({symbol:model[symbol]})
         else:
             raise Exception("No boolean for all symbols.")
+        #print('bool pairs: ', bool_pairs)
         # perhaps label children with operation eg and1, or2
         # solve children and update bool pairs
         for key in self.atomic:
             # solve negation
             if len(self.atomic[key]) == 2:
-                right =bool_pairs[self.atomic[key][1]]
+                right = bool_pairs[self.atomic[key][1]]
                 bool_pairs.update({key: not right})
             elif len(self.atomic[key]) == 3:
                 left = bool_pairs[self.atomic[key][0]]
