@@ -2,66 +2,54 @@ from KnowledgeBase import KnowledgeBase
 from Sentence import Sentence
 
 class BackwardChaining:
-    """description of class"""
+    """Implementation of Backward Chaining Algorithm"""
     def __init__(self, knowledge_base):
-        self.knowledge_base = knowledge_base
-        self.count = 0
+        self.kb = knowledge_base
 
-    def __prove(self, kb, removed, chain, goal):
-        print('query: ', goal)
-        print('removed: ', removed)
-        print('chain: ', chain)
+    # recursive functon used to prove premises are true for a given goal
+    def __prove(self, removed, chain, goal):
 
-        for sentence in kb.sentences:
+        for sentence in self.kb.sentences:      # check if goal already given in kb
             if len(sentence.conjuncts) == 0 and goal == sentence.head:
                 chain.append(goal)
-                print('chain: ', chain)
-                print('exited true1: ', goal)
                 return True, chain
+  
+        removed.append(goal)   # mark goal as visited  
         
-        removed.append(goal)
-
-        for sentence in kb.sentences:
-            if goal == sentence.head:
-                all_true = True     # check for if all subgoals are proven
-                print('conjuncts: ', sentence.conjuncts)
-                for subgoal in sentence.conjuncts:
-                    print('removed: ', removed)
-                    print('conjunct: ', subgoal)
-                    # check if subgoal has already been proven true
-                    if subgoal in chain:
-                        print(subgoal, ' is chain!')
-                        continue
-                    # check if subgoal has already failed
-                    if subgoal in removed:
+        for sentence in self.kb.sentences:
+            if goal == sentence.head:       # loop through sentences that imply the goal
+                all_true = True             # check for if all subgoals are proven
+                for subgoal in sentence.conjuncts:  # loop to prove each premise of current rule of goal
+                    if subgoal in chain:    # check if subgoal has already been proven true
+                        continue            # skip loop if established
+                    if subgoal in removed:  # check if subgoal has already been visited
                         all_true = False
-                        print(subgoal, ' is removed!')
                         break
-                    established, chain = self.__prove(kb, removed, chain, subgoal)
+                    # recursively call self to prove premise
+                    established, chain = self.__prove(removed, chain, subgoal)
+                    # if failed to prove subgoal, goal cannot be establish with current sentence
                     if not established:
                         all_true = False
-                # goal is proven true if subgoals
-                if all_true:
+                if all_true:            # goal is proven true all premises of a rule are proven true
                     chain.append(goal)
-                    print('chain: ', chain)
-                    print('exited true2: ', goal)
                     return True, chain
 
-        print('exited false: ', goal)
         return False, chain
 
-    def __bc_entails(self, kb, goal):
-        for sentence in kb.sentences:
+    # backward chaining algorithm to check if kb entails query
+    # algorithm starts from query, and works backwards by proving premises leading to query
+    # until the query can be proved
+    def __bc_entails(self, goal):
+        for sentence in self.kb.sentences:      # check if goal already given in kb
             if len(sentence.conjuncts) == 0 and goal == sentence.head:
                 return True, [goal]
-        chain = []
-        removed = []
-        return self.__prove(kb, removed, chain, goal)
+        chain = []          # list used to display path of algorithm in solution
+        removed = []        # list used to track list of visited premises to prevent loops
+        return self.__prove(removed, chain, goal)
 
-
-    def solve(self, q):
-        solution_found, chain = self.__bc_entails(self.knowledge_base, q)
-        solution = "YES" if solution_found else "NO"
+    # used solve kb entails query with backward chaining and return a string solution to print
+    def solve(self, query):
+        solution_found, chain = self.__bc_entails(query)
         if solution_found:
             solution = "YES: "
             for ele in chain:

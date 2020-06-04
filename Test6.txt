@@ -1,4 +1,4 @@
 TELL
-p => q; m&l => p; b&l => m; a&l=>l; a&b => l; a; b;
+p => q; &l => p; b&l => m; a&l=>l; a&b => l; a; b;
 ASK
 q

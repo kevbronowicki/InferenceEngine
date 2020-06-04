@@ -1,4 +1,5 @@
 class FileReader:
+    """File Reader which retrieves tell and ask statements from text file"""
     @staticmethod
     def read(filename):
         tell = []
@@ -15,9 +16,10 @@ class FileReader:
                     x = x.lower()
                     if x != "" and x != "tell" and x != "ask":
                         if ask_found:
-                            ask = x
+                            ask = x.replace(" ", "")    # assign ask statement without spaces
                         else:
-                            tell.append(x.replace(" ", ""))
+                            tell.append(x.replace(" ", "")) # remove spaces and add to tell
+                    # when 'ask' is found, following statement will be added to ask
                     if x == "ask":
                         ask_found = True
         return tell, ask
