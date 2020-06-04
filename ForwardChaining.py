@@ -18,13 +18,16 @@ class ForwardChaining:
             if len(sentence.conjuncts) > 0:
                 count.update({sentence:len(sentence.conjuncts)}) # update count with the sentence and number of conjuncts
             else:
+                if sentence.head == query:      # return true and query if can be directly proven
+                    return True, [query] 
                 agenda.append(sentence.head)    # if sentence has no conjuncts, it can be assumed true
+
         for symbol in self.kb.symbols:
             inferred.update({symbol: False})    # set all symbols to false initially
 
         while len(agenda) != 0:
             p = agenda.pop(0)       # get first propositonal symbol in agenda list
-            chain.append(p)         
+            chain.append(p)
             if not inferred[p]:     # if symbol has not yet been inferred
                 inferred[p] = True
                 for c in count:             # loop through all sentence (c) in count

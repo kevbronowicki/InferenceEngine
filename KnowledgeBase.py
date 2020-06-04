@@ -8,7 +8,7 @@ class KnowledgeBase:
         ## fields ##
         self.sentences = []        # sentences contained in knowledge base
         self.symbols = []          # all found unique symbols in sentences
-        if type is 'HF' or 'GS':   # check if type is valid
+        if type == 'HF' or 'GS':   # check if type is valid
             self.type = type
         else:
             raise Exception("Unknown sentence type.")
@@ -18,9 +18,9 @@ class KnowledgeBase:
     # tell knowledge base a sentence
     def tell(self, sentence):
         # create sentence of chosen type 
-        if self.type is 'HF':
+        if self.type == 'HF':
             new = HornForm(sentence)
-        elif self.type is 'GS':
+        elif self.type == 'GS':
             new = Sentence(sentence)    # general sentences            
         # add sentence to knowledge base
         self.sentences.append(new)
