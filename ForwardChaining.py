@@ -12,10 +12,10 @@ class ForwardChaining:
         agenda = []
         chain = []
         for sentence in kb.sentences:
-            if len(sentence.left) > 0:
-                count.update({sentence:len(sentence.left)})
+            if len(sentence.conjuncts) > 0:
+                count.update({sentence:len(sentence.conjuncts)})
             else:
-                agenda.append(sentence.right)
+                agenda.append(sentence.head)
         inferred = {}
         for symbol in kb.symbols:
             inferred.update({symbol: False})
@@ -26,13 +26,13 @@ class ForwardChaining:
             if not inferred[p]:
                 inferred[p] = True
                 for c in count:
-                    if p in c.left:
+                    if p in c.conjuncts:
                         count[c]-=1
                         if count[c] == 0:
-                            if c.right == q:
+                            if c.head == q:
                                 chain.append(q)
                                 return True, chain
-                            agenda.append(c.right)
+                            agenda.append(c.head)
         return False, []
 
 

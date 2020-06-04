@@ -6,6 +6,7 @@ from Sentence import Sentence
 from TruthTable import TruthTable
 from HornForm import HornForm
 from ForwardChaining import ForwardChaining
+from BackwardChaining import BackwardChaining
 
 if __name__ == "__main__":
     """
@@ -26,8 +27,11 @@ if __name__ == "__main__":
     #tt = TruthTable(kb)
     #print(tt.solve(ask))
     print('ask: ', ask)
-    fc = ForwardChaining(kb)
-    print(fc.solve(ask))
+    bc = BackwardChaining(kb)
+    print(bc.solve(ask))
+
+    #fc = ForwardChaining(kb)
+    #print(fc.solve(ask))
 
     #sentence = Sentence("a&b&c=>d")
 
